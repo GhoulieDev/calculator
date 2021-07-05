@@ -34,3 +34,4 @@ console.log(operate('+', 5, 10));
 console.log(operate('-', 5, 10));
 console.log(operate('*', 5, 10));
 console.log(operate('/', 5, 10));
+
