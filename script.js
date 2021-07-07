@@ -30,48 +30,99 @@ function operate(operator, num1, num2) {
     }
 }
 
+let digits = '';
 let firstNum = '';
-let digit;
 let operator = '';
-let secondNum = ''
+let secondNum = '';
+let result;
+let hasDecimal = false;
 
-const displayBox = document.getElementById('display');
-const displayNumberTop = document.getElementById('top');
-const displayNumberBottom = document.getElementById('bottom');
-const displayNum = document.createElement('p');
 
-const buttons = document.querySelectorAll('button');
-buttons.forEach(button => {
-    button.addEventListener('click', storeInput);
-})
+const displayBoxTop = document.getElementById('top');
+const displayNumTop = document.createElement('p');
+const displayBoxBottom = document.getElementById('bottom');
+const displayNumBottom = document.createElement('p');
+
+const digitBtns = document.querySelectorAll('.digit');
+digitBtns.forEach(digitBtn => {
+    digitBtn.addEventListener('click', storeInput);
+});
+
+const operatorBtns = document.querySelectorAll('.operator');
+operatorBtns.forEach(operatorBtn => {
+    operatorBtn.addEventListener('click', storeOperator)
+});
+
+const equalsBtn = document.querySelector('.equals');
+equalsBtn.addEventListener('click', performOperation);
 
 function storeInput(event) {
-   
+    let input = event.target.textContent;
+    if(digits == '' && input == '.') {
+        digits = '0.'
+        hasDecimal = true;
+    }else if(hasDecimal && input == '.'){
+        return;
+    }else{
+        digits += input;
+        if (input == '.') {
+            hasDecimal = true;
+        }
+    }
+    updateDisplay(digits);
 }
 
+function storeOperator(event) {
+    operator = event.target.textContent;
+    if(operator == 'x'){
+        operator = '*';
+    }else if (operator == '÷') {
+        operator = '/';
+    }
+
+    if(typeof firstNum == 'string') {
+        firstNum = Number(digits);
+    }
+    digits = '';
+    clearDisplay();
+}
+
+function updateDisplay(num){
+    displayNumBottom.textContent = num;
+    displayBoxBottom.appendChild(displayNumBottom);
+}
+
+function clearDisplay(){
+    displayBoxBottom.textContent = '';
+}
+
+function performOperation(){
+    if(firstNum) {
+        secondNum = Number(digits);
+        clearDisplay();
+        console.log('Before calc: ' + firstNum);
+        console.log('Before calc: ' + operator);
+        console.log('Before calc: ' + secondNum);
+        result = operate(operator, firstNum, secondNum);
+        updateDisplay(result);
+        firstNum = result;
+        console.log(result);
+    }
+    
+}
+
+//test floating point arithmatic numbers when timesing
+//eg 1.01 x 3 = 3.030000000002
 
 
-// if(event.target.classList.contains('operator')) {
-//     firstNum = Number(firstNum);
-//     operator = event.target.textContent;
-//     displayBox.removeChild(displayNums);
-    
-// }else if(event.target.classList.contains('equals')){
-//     secondNum = Number(secondNum);
-//     displayBox.removeChild(displayNums);
-//     result = operate(operator, firstNum, secondNum);
-//     displayNums.textContent = result;
-//     displayBox.appendChild(displayNums);
-    
-    
-// }else if (typeof firstNum == 'string') {
-//     digit = event.target.textContent;
-//     firstNum = firstNum + digit;
-//     displayNums.textContent = firstNum;
-//     displayBox.appendChild(displayNums);
-// }else{
-//     digit = event.target.textContent;
-//     secondNum = secondNum + digit;
-//     displayNums.textContent = secondNum;
-//     displayBox.appendChild(displayNums);
-// }
+
+
+
+
+
+
+
+
+
+
+
