@@ -1,10 +1,3 @@
-let digits = '';
-let firstNum = '';
-let operator = '';
-let secondNum = '';
-let result;
-let hasDecimal = false;
-
 const displayBoxTop = document.getElementById('top');
 const displayNumTop = document.createElement('p');
 const displayBoxBottom = document.getElementById('bottom');
@@ -12,22 +5,22 @@ const displayNumBottom = document.createElement('p');
 
 const digitBtns = document.querySelectorAll('.digit');
 digitBtns.forEach(digitBtn => {
-    digitBtn.addEventListener('click', storeInput);
+    digitBtn.addEventListener('click', input);
 });
 
 const operatorBtns = document.querySelectorAll('.operator');
 operatorBtns.forEach(operatorBtn => {
-    operatorBtn.addEventListener('click', storeOperator)
+    operatorBtn.addEventListener('click', storeOp)
 });
 
 const equalsBtn = document.querySelector('.equals');
 equalsBtn.addEventListener('click', performOperation);
 
 const clearBtn = document.querySelector('#clear');
-clearBtn.addEventListener('click', reset);
+clearBtn.addEventListener('click', clearDisplay);
 
-const deleteBtn = document.querySelector('#delete');
-deleteBtn.addEventListener('click', deleteInput);
+// const deleteBtn = document.querySelector('#delete');
+// deleteBtn.addEventListener('click', x);
 
 function add (num1, num2) {
     return num1 + num2;
@@ -52,7 +45,7 @@ function operate(operator, num1, num2) {
             
         case '-':
             return subtract(num1, num2);
-        
+            
         case '*':
             return multiply(num1, num2);
             
@@ -61,41 +54,45 @@ function operate(operator, num1, num2) {
     }
 }
 
-function storeInput(event) {
+let currentNum = '';
+let operator = '';
+let firstNum = '';
+let secondNum = '';
+let hasDecimal = false;
+
+//if trying to enter new numbers while result is displayed, reset display and current inputs, ready for new ones
+function input(event){
+    if(firstNum && !operator){
+        clearDisplay();
+    }
     
     let input = event.target.textContent;
-    if(digits == '' && input == '0'){
-        return;
-    }else if(digits == '' && input == '.') {
-        digits = '0.'
-        hasDecimal = true;
-    }else if(hasDecimal && input == '.'){
-        return;
-    }else{
-        digits += input;
-        if (input == '.') {
-            hasDecimal = true;
-        }
-    }
-    updateDisplay(digits);
-   
-}
+    switch(input){
+        //uses a bool variable to handle preventing the user from entering more than 1 decimal point
+        case '.':
+            if(!currentNum){
+                currentNum = '0.';
+                hasDecimal = true;
+                break;
+            }else if(hasDecimal){
+                break;
+            }else{
+                hasDecimal = true;
+                currentNum += input;
+                break;
+            }
 
-function storeOperator(event) {
-    operator = event.target.textContent;
-    if(operator == 'x'){
-        operator = '*';
-    }else if (operator == '÷') {
-        operator = '/';
+        //ignore input if currentNum is 0 and user pressed another 0
+        case '0':
+            if(currentNum.startsWith('0') && currentNum.length == 1){
+                break;
+            }
+        
+            default:
+            currentNum += input;
     }
     
-    if(typeof firstNum == 'string') {
-        firstNum = Number(digits);
-    }
-    
-
-    digits = '';
-    clearDisplay();
+    updateDisplay(currentNum);
 }
 
 function updateDisplay(num){
@@ -104,59 +101,65 @@ function updateDisplay(num){
 }
 
 function clearDisplay(){
-    displayBoxBottom.textContent = '';
+    currentNum = '';
+    operator = '';
+    firstNum = '';
+    secondNum = '';
+    hasDecimal = false;
+    updateDisplay('');
+}
+
+function storeOp(event){
+    if(!firstNum){
+        firstNum = currentNum;
+        currentNum = '';
+    }
     
+    //stepping into this statement means the user has entered a operator before pressing equals, so the previous result should display, allowing for stringing several operations together
+    if(firstNum && currentNum) {
+        performOperation();
+    }
+    
+    operator = event.target.textContent;
+    if(operator == 'x'){
+        operator = '*';
+    }else if(operator == '÷'){
+        operator = '/';
+    }
 }
 
 function performOperation(){
-    if(firstNum && digits) {
-        secondNum = Number(digits);
-        clearDisplay();
-        console.log('Before calc: ' + firstNum);
-        console.log('Before calc: ' + operator);
-        console.log('Before calc: ' + secondNum);
-        result = operate(operator, firstNum, secondNum);
-        if (String(result).length > 15){
-            result = result.toPrecision(12);
+    if(firstNum && currentNum){
+        firstNum = Number(firstNum);
+        secondNum = Number(currentNum);
+        currentNum = '';
+        firstNum = operate(operator, firstNum, secondNum);
+        if(String(firstNum).length > 14){
+            firstNum = firstNum.toFixed(2);
         }
-        updateDisplay(result);
-        firstNum = result;
-       
-        console.log(result);
+
+        if(firstNum === Infinity){
+            clearDisplay();
+            alert('Can\'t divide by zero!');
+        }else{
+            updateDisplay(firstNum);
+            operator = '';
+        }
     }
 }
 
-function reset() {
-    digits = '';
-    firstNum = '';
-    operator = '';
-    secondNum = '';
-    hasDecimal = false;
-    result = 0;
-    clearDisplay();
-}   
-
-function deleteInput() {
-    if(digits){
-        digits = digits.slice(0,digits.length-1)
-        updateDisplay(digits);
-    }
-}
-
-//REDO AND TIDY UP CODE, PLANNING AHEAD FOR INPUTS AND OUTPUTS ETC
-
-//test floating point arithmatic numbers when timesing
-//eg 1.01 x 3 = 3.030000000002
-//round it to however many digits after the . ?
-
-//error message when divide by 0
-
-//top display
-
-//keybaord support
 
 
-//turn if else ifs into switch?
+
+
+
+
+
+
+
+
+
+
 
 
 
