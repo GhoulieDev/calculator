@@ -19,8 +19,8 @@ equalsBtn.addEventListener('click', performOperation);
 const clearBtn = document.querySelector('#clear');
 clearBtn.addEventListener('click', clearDisplay);
 
-// const deleteBtn = document.querySelector('#delete');
-// deleteBtn.addEventListener('click', x);
+const deleteBtn = document.querySelector('#delete');
+deleteBtn.addEventListener('click', removeLastInput);
 
 function add (num1, num2) {
     return num1 + num2;
@@ -60,7 +60,7 @@ let firstNum = '';
 let secondNum = '';
 let hasDecimal = false;
 
-//if trying to enter new numbers while result is displayed, reset display and current inputs, ready for new ones
+//trying to enter new numbers while result is displayed, resets display and current inputs, ready for new ones
 function input(event){
     if(firstNum && !operator){
         clearDisplay();
@@ -88,10 +88,15 @@ function input(event){
                 break;
             }
         
-            default:
+        default:
             currentNum += input;
+            //remove leading zero eg 0234 -> 234
+            if(currentNum.charAt(0) == '0' && currentNum.charAt(1)){
+                if(currentNum.charAt(1) != '.'){
+                    currentNum = currentNum.substr(1);
+                }
+            }
     }
-    
     updateDisplay(currentNum);
 }
 
@@ -115,7 +120,7 @@ function storeOp(event){
         currentNum = '';
     }
     
-    //stepping into this statement means the user has entered a operator before pressing equals, so the previous result should display, allowing for stringing several operations together
+    //if the user has entered an operator before pressing equals, the previous result should display, allowing for stringing several operations together eg 7x2(14)+3 = 17
     if(firstNum && currentNum) {
         performOperation();
     }
@@ -148,10 +153,21 @@ function performOperation(){
     }
 }
 
+function removeLastInput(){
+    if(currentNum){
+        currentNum = currentNum.substr(0, currentNum.length-1);
+        updateDisplay(currentNum);
+    }
+}
 
 
+//backspace button
+//rounding
+//keyboard support
+//top line display
 
 
+//going forward: better git commit timing and comments, planning ahead for better code structure, debugging in vscode/broweser
 
 
 
