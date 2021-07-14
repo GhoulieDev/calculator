@@ -155,7 +155,10 @@ function storeOperator(event){
     }else if(operator == '÷'){
         operator = '/';
     }
-    updateTopDisplay(firstNum, operator, '');
+    if(firstNum){
+        updateTopDisplay(firstNum, operator, '');
+    }
+    
 }
 
 function performOperation(){
